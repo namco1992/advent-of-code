@@ -2,6 +2,8 @@ package util
 
 type CharSet map[int32]struct{}
 
+type StrSet map[string]struct{}
+
 func NewSet(s string) CharSet {
 	set := make(CharSet)
 	for _, i := range s {

@@ -6,44 +6,15 @@ import (
 	"io"
 	"log"
 	"os"
-	"strconv"
 	"strings"
+
+	"github.com/namco1992/aoc/util"
 )
 
-type point struct {
-	x, y int
-}
-
-type line struct {
-	start, end point
-}
-
-func mustInt(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return i
-}
-
-func max(a, b int) int {
-	if a >= b {
-		return a
-	}
-	return b
-}
-
-func abs(i int) int {
-	if i >= 0 {
-		return i
-	}
-	return -i
-}
-
-func scan(reader io.Reader) ([]line, int, int) {
+func scan(reader io.Reader) ([]util.Line, int, int) {
 	scanner := bufio.NewScanner(reader)
 	var (
-		lines      []line
+		lines      []util.Line
 		maxX, maxY int
 	)
 
@@ -51,13 +22,13 @@ func scan(reader io.Reader) ([]line, int, int) {
 		s := strings.Split(scanner.Text(), " -> ")
 		start := strings.Split(s[0], ",")
 		end := strings.Split(s[1], ",")
-		sp := point{x: mustInt(start[0]), y: mustInt(start[1])}
-		ep := point{x: mustInt(end[0]), y: mustInt(end[1])}
+		sp := util.Point{X: util.MustAtoi(start[0]), Y: util.MustAtoi(start[1])}
+		ep := util.Point{X: util.MustAtoi(end[0]), Y: util.MustAtoi(end[1])}
 
-		maxX = max(maxX, max(sp.x, ep.x))
-		maxY = max(maxY, max(sp.y, ep.y))
+		maxX = util.Max(maxX, util.Max(sp.X, ep.X))
+		maxY = util.Max(maxY, util.Max(sp.Y, ep.Y))
 
-		l := line{start: sp, end: ep}
+		l := util.Line{Start: sp, End: ep}
 		lines = append(lines, l)
 	}
 
@@ -68,34 +39,34 @@ func scan(reader io.Reader) ([]line, int, int) {
 	return lines, maxX + 1, maxY + 1
 }
 
-func part1(lines []line, x, y int) int {
+func part1(lines []util.Line, x, y int) int {
 	matrix := make([][]int, y)
 	for i := 0; i < y; i++ {
 		matrix[i] = make([]int, x)
 	}
 
 	for _, l := range lines {
-		if l.start.x == l.end.x {
-			var start point
-			if l.start.y >= l.end.y {
-				start = l.end
+		if l.Start.X == l.End.X {
+			var start util.Point
+			if l.Start.Y >= l.End.Y {
+				start = l.End
 			} else {
-				start = l.start
+				start = l.Start
 			}
-			d := abs(l.start.y - l.end.y)
+			d := util.Abs(l.Start.Y - l.End.Y)
 			for i := 0; i <= d; i++ {
-				matrix[start.y+i][l.start.x] += 1
+				matrix[start.Y+i][l.Start.X] += 1
 			}
-		} else if l.start.y == l.end.y {
-			var start point
-			if l.start.x >= l.end.x {
-				start = l.end
+		} else if l.Start.Y == l.End.Y {
+			var start util.Point
+			if l.Start.X >= l.End.X {
+				start = l.End
 			} else {
-				start = l.start
+				start = l.Start
 			}
-			d := abs(l.start.x - l.end.x)
+			d := util.Abs(l.Start.X - l.End.X)
 			for i := 0; i <= d; i++ {
-				matrix[l.start.y][start.x+i] += 1
+				matrix[l.Start.Y][start.X+i] += 1
 			}
 		}
 	}
@@ -112,7 +83,7 @@ func part1(lines []line, x, y int) int {
 	return cnt
 }
 
-func part2(lines []line, x, y int) int {
+func part2(lines []util.Line, x, y int) int {
 	matrix := make([][]int, y)
 	for i := 0; i < y; i++ {
 		matrix[i] = make([]int, x)
@@ -120,43 +91,43 @@ func part2(lines []line, x, y int) int {
 
 	for _, l := range lines {
 		switch {
-		case l.start.x == l.end.x:
-			var start point
-			if l.start.y >= l.end.y {
-				start = l.end
+		case l.Start.X == l.End.X:
+			var start util.Point
+			if l.Start.Y >= l.End.Y {
+				start = l.End
 			} else {
-				start = l.start
+				start = l.Start
 			}
-			d := abs(l.start.y - l.end.y)
+			d := util.Abs(l.Start.Y - l.End.Y)
 			for i := 0; i <= d; i++ {
-				matrix[start.y+i][l.start.x] += 1
+				matrix[start.Y+i][l.Start.X] += 1
 			}
-		case l.start.y == l.end.y:
-			var start point
-			if l.start.x >= l.end.x {
-				start = l.end
+		case l.Start.Y == l.End.Y:
+			var start util.Point
+			if l.Start.X >= l.End.X {
+				start = l.End
 			} else {
-				start = l.start
+				start = l.Start
 			}
-			d := abs(l.start.x - l.end.x)
+			d := util.Abs(l.Start.X - l.End.X)
 			for i := 0; i <= d; i++ {
-				matrix[l.start.y][start.x+i] += 1
+				matrix[l.Start.Y][start.X+i] += 1
 			}
-		case l.start.x < l.end.x && l.start.y < l.end.y:
-			l.start, l.end = l.end, l.start
+		case l.Start.X < l.End.X && l.Start.Y < l.End.Y:
+			l.Start, l.End = l.End, l.Start
 			fallthrough
-		case l.start.x > l.end.x && l.start.y > l.end.y:
-			d := l.start.x - l.end.x
+		case l.Start.X > l.End.X && l.Start.Y > l.End.Y:
+			d := l.Start.X - l.End.X
 			for ; d >= 0; d-- {
-				matrix[l.start.y-d][l.start.x-d] += 1
+				matrix[l.Start.Y-d][l.Start.X-d] += 1
 			}
-		case l.start.x < l.end.x && l.start.y > l.end.y:
-			l.start, l.end = l.end, l.start
+		case l.Start.X < l.End.X && l.Start.Y > l.End.Y:
+			l.Start, l.End = l.End, l.Start
 			fallthrough
-		case l.start.x > l.end.x && l.start.y < l.end.y:
-			d := l.start.x - l.end.x
+		case l.Start.X > l.End.X && l.Start.Y < l.End.Y:
+			d := l.Start.X - l.End.X
 			for ; d >= 0; d-- {
-				matrix[l.start.y+d][l.start.x-d] += 1
+				matrix[l.Start.Y+d][l.Start.X-d] += 1
 			}
 		}
 	}

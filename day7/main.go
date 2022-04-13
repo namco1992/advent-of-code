@@ -57,7 +57,7 @@ func part2(input []int) float64 {
 	}
 	avg = avg / float64(len(input))
 	ceiling := math.Ceil(avg)
-	// floor := math.Floor(avg)
+	// floor := math.go.Floor(avg)
 	fmt.Println(ceiling)
 	var cost int
 	for _, n := range input {

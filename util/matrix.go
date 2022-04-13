@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -53,4 +54,16 @@ func (m Matrix) String() string {
 		sb.WriteByte('\n')
 	}
 	return sb.String()
+}
+
+type Point struct {
+	X, Y int
+}
+
+func (p Point) String() string {
+	return fmt.Sprintf("(%d,%d)", p.X, p.Y)
+}
+
+type Line struct {
+	Start, End Point
 }
